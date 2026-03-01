@@ -35,14 +35,17 @@ const createProductController = async(req, res)=>{
 
 const updateProductController = async(req, res)=>{
     try {
+        console.log("controller reached")
         let id = req.params.id;
                 if(!id){
                     return res.status(404).json({
                         message:"Id not found"
                     })
                 }
-        let product = await productModel.findById({id})
+                console.log(id)
+        let product = await productModel.findById(id)
         console.log(id);
+        console.log(product)
         if(!product){
             return res.status(404).json({
                 message:"Product Unavailable."
