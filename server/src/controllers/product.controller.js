@@ -2,6 +2,7 @@ const productModel = require("../models/product.model");
 
 const createProductController = async(req, res)=>{
     try {
+        console.log("Controller reached");
         const {name, description, price, category, brand, stock, rating} = req.body;
 
         if(!name || !description || !price || !category || !brand || !stock){
@@ -18,8 +19,10 @@ const createProductController = async(req, res)=>{
             stock,
             rating
         })
+        console.log("Created Product:", newProduct);
         return res.status(201).json({
-            message:"Product Created!"
+            message: "BRO THIS IS THE NEW CONTROLLER",
+            data: newProduct
         })
     } catch (error) {
         return res.status(500).json({
@@ -29,6 +32,42 @@ const createProductController = async(req, res)=>{
 }
 
 
+
+const updateProductController = async(req, res)=>{
+    try {
+        let id = req.params.id;
+                if(!id){
+                    return res.status(404).json({
+                        message:"Id not found"
+                    })
+                }
+        let product = await productModel.findById({id})
+        console.log(id);
+        if(!product){
+            return res.status(404).json({
+                message:"Product Unavailable."
+            })
+        }
+
+        const updatedProduct = await productModel.findByIdAndUpdate(
+            id,
+            {$set:req.body},
+            {new:true}
+        )
+
+        return res.status(200).json({
+            message:"Product Updated!",
+            product: updatedProduct
+        })
+
+    } catch (error) {
+        return res.status(500).json({
+            message:"There is some error in Updation - Check Again."
+        })
+    }
+}
+
 module.exports = {
-    createProductController
+    createProductController,
+    updateProductController
 }
