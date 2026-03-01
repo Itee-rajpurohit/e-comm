@@ -32,11 +32,12 @@ const createProductController = async(req, res)=>{
 }
 
 
-
+ 
 const updateProductController = async(req, res)=>{
     try {
         console.log("controller reached")
         let id = req.params.id;
+        console.log(id)
                 if(!id){
                     return res.status(404).json({
                         message:"Id not found"
@@ -55,7 +56,9 @@ const updateProductController = async(req, res)=>{
         const updatedProduct = await productModel.findByIdAndUpdate(
             id,
             {$set:req.body},
-            {new:true}
+            {returnDocument: 'after',
+                runValidators:true
+            }
         )
 
         return res.status(200).json({
@@ -65,12 +68,66 @@ const updateProductController = async(req, res)=>{
 
     } catch (error) {
         return res.status(500).json({
-            message:"There is some error in Updation - Check Again."
+            message:"There is some error in Updation - Check Again.",
+            error:error.message
         })
     }
 }
 
+const deleteProductController = async(req, res)=>{
+    try {
+        let id = req.params.id;
+        if(!id){
+            return res.status(404).json({
+                message:"Product ID not found"
+            })
+        }
+
+        let product = await productModel.findById(id);
+        if(!product){
+            return res.status(404).json({
+                message:"Product not found."
+            })
+        }
+
+        let deleteProduct = await productModel.findByIdAndDelete(id);
+        return res.status(200).json({
+            message:"Product Deleted Successfully."
+        })
+    } catch (error) {
+        return res.status(500).json({
+            message:"There is some error in DEletion - Check Again.",
+            error:error.message
+        })
+    }
+}
+
+const viewProductListController = async(req, res)=>{
+    try {
+        const products = await productModel.find();
+        if(!products || products.length === 0){
+            return res.status(404).json({
+                message: "No Product Found"
+            })
+        }
+
+        return res.status(200).json({
+            message:"Products Fetched Successfully",
+            total: products.length,
+            products: products
+        })
+    } catch (error) {
+        return res.status(500).json({
+            message:"There is some error in Fetching all products - Check Again.",
+            error:error.message
+        })
+    }
+}
+
+
 module.exports = {
     createProductController,
-    updateProductController
+    updateProductController,
+    deleteProductController,
+    viewProductListController
 }

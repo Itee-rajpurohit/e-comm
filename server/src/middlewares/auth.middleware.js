@@ -12,14 +12,12 @@ async function authMiddleware(req, res, next){
     }
     try {
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
-        // console.log("Chala11" ,decoded);
+        
         if(decoded.role === "user"){
             return res.status(403).json({
                 message: "You are not Admin!"
             })
         }
-        // console.log("Chala12");
-
          let currentUser = await userModel.findById(decoded.id);
             req.user = currentUser;
         next();
