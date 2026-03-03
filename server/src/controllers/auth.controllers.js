@@ -41,6 +41,8 @@ const registerController = async(req, res)=>{
         return res.status(201).json({
             message:"USer Created Successfully",
             user:userObj,
+            token:token,
+            role:"user"
         })
 
     } catch (error) {
@@ -83,7 +85,9 @@ const loginController = async(req, res)=>{
 
         return res.status(200).json({
             message:"User Successfully Logged In ",
-            user:userObj
+            user:userObj,
+            token:token,
+            role:"user"
         })
     } catch (error) {
         return res.status(500).json({
@@ -110,9 +114,26 @@ const logoutController = async(req,res)=>{
 }
 
 
+const profileController = async(req, res)=>{
+    try {
+        let user = req.user;
+        let userObject = user.toObject();
+        delete userObject.password;
+        return res.status(200).json({
+            message:"Profile Fetched",
+            user: userObject
+        })
+    } catch (error) {
+        return res.status(500).json({
+            message:"Failed to fetch profile!"
+        })
+    }
+}
+
 
 module.exports = {
     registerController,
     loginController,
-    logoutController
+    logoutController,
+    profileController
 }

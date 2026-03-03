@@ -28,4 +28,26 @@ async function authMiddleware(req, res, next){
     }
 }
 
-module.exports = authMiddleware
+async function universalAuth(req, res, next){
+    let token = req.cookies.token;
+    if(!token){
+        return res.status(401).json({
+            message:"Please Login!"
+        })
+    }
+    try {
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
+        let currentUser = await userModel.findById(decoded.id);
+        req.user = currentUser;
+        next();
+    } catch (error) {
+        return res.status(401).json({
+            message:"Invalid Token!"
+        })
+    }
+}
+
+module.exports = {authMiddleware,
+    universalAuth
+}
