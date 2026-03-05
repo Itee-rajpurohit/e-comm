@@ -8,7 +8,7 @@ const {
 } = require("../controllers/product.controller")
 const router = express.Router();
 
-
+ 
 router.post("/create",authMiddleware,createProductController)
 router.patch("/:id", authMiddleware, updateProductController)
 router.delete("/:id", authMiddleware, deleteProductController)

@@ -39,6 +39,7 @@ async function universalAuth(req, res, next){
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
         let currentUser = await userModel.findById(decoded.id);
+        req.role = decoded.role;
         req.user = currentUser;
         next();
     } catch (error) {

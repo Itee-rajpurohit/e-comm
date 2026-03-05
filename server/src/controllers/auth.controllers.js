@@ -5,7 +5,7 @@ const jwt = require("jsonwebtoken");
 
 const registerController = async(req, res)=>{
     try {
-        const {fullName, email, password} = req.body; 
+        const {fullName, email, password,role} = req.body; 
         if(!fullName || !email || !password){
             return res.status(400).json({
                 message:"All Fields Required!"
@@ -28,6 +28,7 @@ const registerController = async(req, res)=>{
             fullName,
             email,
             password: hashedPassword,
+            role: role || "user"
         })
          console.log("chala5");
 
@@ -42,7 +43,7 @@ const registerController = async(req, res)=>{
             message:"USer Created Successfully",
             user:userObj,
             token:token,
-            role:"user"
+            role:newUser.role
         })
 
     } catch (error) {
@@ -87,7 +88,7 @@ const loginController = async(req, res)=>{
             message:"User Successfully Logged In ",
             user:userObj,
             token:token,
-            role:"user"
+            role:existingUser.role
         })
     } catch (error) {
         return res.status(500).json({
