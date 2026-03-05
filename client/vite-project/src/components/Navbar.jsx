@@ -10,7 +10,8 @@ const Navbar = () => {
             await logoutController();
            console.log("Logout chala!")
         } catch (error) {
-            console.log("Logout API Failed!")
+            // console.log("Logout API Failed!")
+            error.alert("error in navbar")
             
         }
          dispatch(logout());
