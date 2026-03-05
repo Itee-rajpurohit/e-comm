@@ -104,7 +104,12 @@ const deleteProductController = async(req, res)=>{
 
 const viewProductListController = async(req, res)=>{
     try {
-        const products = await productModel.find();
+        let page = parseInt(req.query.page);
+        let limit = parseInt(req.query.limit);
+        let skip =(page-1)*limit;
+        const totalProducts = await productModel.countDocuments();
+        
+        const products = await productModel.find().skip(skip).limit(limit);
         if(!products || products.length === 0){
             return res.status(404).json({
                 message: "No Product Found"
@@ -113,7 +118,10 @@ const viewProductListController = async(req, res)=>{
 
         return res.status(200).json({
             message:"Products Fetched Successfully",
-            total: products.length,
+            page,
+            limit,
+            totalProducts,
+            totalPages:Math.ceil(totalProducts/limit),
             products: products
         })
     } catch (error) {
