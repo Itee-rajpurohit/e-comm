@@ -51,6 +51,9 @@ return (
       <h2 className="text-2xl font-bold text-center mb-6">
         Login
       </h2>
+      <h2 className="text-sm text-red-500  text-center mb-6">
+        ADMIN CREDENTIALS- email:admin@example.com | password:1234
+      </h2>
 
       <form onSubmit={handleSubmit} className="space-y-4">
 
