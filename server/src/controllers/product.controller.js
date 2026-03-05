@@ -102,36 +102,97 @@ const deleteProductController = async(req, res)=>{
     }
 }
 
-const viewProductListController = async(req, res)=>{
-    try {
-        let page = parseInt(req.query.page);
-        let limit = parseInt(req.query.limit);
-        let skip =(page-1)*limit;
-        const totalProducts = await productModel.countDocuments();
-        
-        const products = await productModel.find().skip(skip).limit(limit);
-        if(!products || products.length === 0){
-            return res.status(404).json({
-                message: "No Product Found"
-            })
-        }
+const viewProductListController = async (req, res) => {
+  try {
 
-        return res.status(200).json({
-            message:"Products Fetched Successfully",
-            page,
-            limit,
-            totalProducts,
-            totalPages:Math.ceil(totalProducts/limit),
-            products: products
-        })
-    } catch (error) {
-        return res.status(500).json({
-            message:"There is some error in Fetching all products - Check Again.",
-            error:error.message
-        })
+    let page = parseInt(req.query.page) || 1;
+    let limit = parseInt(req.query.limit) || 8;
+    let skip = (page - 1) * limit;
+
+    let query = {};
+
+    if (req.query.category) {
+      query.category = req.query.category;
     }
-}
 
+    if (req.query.brand) {
+      query.brand = req.query.brand;
+    }
+
+    if (req.query.rating) {
+      query.rating = { $gte: Number(req.query.rating) };
+    }
+
+    if (req.query.inStock === "true") {
+      query.stock = { $gt: 0 };
+    }
+
+    if (req.query.minPrice || req.query.maxPrice) {
+      query.price = {};
+
+      if (req.query.minPrice) {
+        query.price.$gte = Number(req.query.minPrice);
+      }
+
+      if (req.query.maxPrice) {
+        query.price.$lte = Number(req.query.maxPrice);
+      }
+    }
+
+    if (req.query.search) {
+      query.name = {
+        $regex: req.query.search,
+        $options: "i"
+      };
+    }
+
+    let sortOption = {};
+
+    switch (req.query.sort) {
+      case "priceLowHigh":
+        sortOption.price = 1;
+        break;
+
+      case "priceHighLow":
+        sortOption.price = -1;
+        break;
+
+      case "newest":
+        sortOption.createdAt = -1;
+        break;
+
+      case "topRated":
+        sortOption.rating = -1;
+        break;
+
+      default:
+        sortOption.createdAt = -1;
+    }
+
+    const totalProducts = await productModel.countDocuments(query);
+
+    const products = await productModel
+      .find(query)
+      .sort(sortOption)
+      .skip(skip)
+      .limit(limit);
+
+    return res.status(200).json({
+      message: "Products fetched successfully",
+      page,
+      limit,
+      totalProducts,
+      totalPages: Math.ceil(totalProducts / limit),
+      products
+    });
+
+  } catch (error) {
+    return res.status(500).json({
+      message: "Error fetching products",
+      error: error.message
+    });
+  }
+};
 
 module.exports = {
     createProductController,
