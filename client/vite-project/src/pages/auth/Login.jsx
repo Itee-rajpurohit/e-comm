@@ -2,10 +2,11 @@ import {useState} from "react";
 import { useDispatch } from "react-redux";
 import { loginController } from "../../services/auth.api";
 import { setLogin } from "../../redux/authSlice";
-
+import { useNavigate } from "react-router-dom";
 
 
 const Login = () => {
+  const navigate = useNavigate();
   const dispatch = useDispatch();
 
   const [formData, setformData] = useState({
@@ -31,6 +32,12 @@ const Login = () => {
                 role:data.role
         }))
         console.log("Data aagya", data)
+        if (data.role === "admin") {
+      navigate("/products");
+    } else {
+      navigate("/");
+    }
+
     } catch (error) {
         alert(error.response?.data?.message || "Login Failed!")
     }

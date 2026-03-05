@@ -2,9 +2,10 @@ import { useState } from 'react'
 import { registerController } from '../../services/auth.api'
 import { setLogin } from '../../redux/authSlice'
 import { useDispatch } from 'react-redux'
+import { useNavigate } from "react-router-dom";
 
 const Register = () => {
-
+    const navigate = useNavigate();
     const dispatch = useDispatch(); //Tell Redux to change something.
 /*Visual Flow
 
@@ -44,6 +45,11 @@ All components re-render*/
                 token: data.token,
                 role:data.role
             }));
+             if (data.role === "admin") {
+      navigate("/products");
+    } else {
+      navigate("/");
+    }
         } catch (error) {
             alert(error.response?.data?.message || "Registration Failed");
         }

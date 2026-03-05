@@ -1,24 +1,48 @@
-import React from 'react'
-import Register from './pages/auth/Register'
-import Login from './pages/auth/Login'
-import AuthInitialiser from './components/AuthInitialiser'
-import Navbar from './components/Navbar'
-import ProductList from './components/ProductList'
-import ProductForm from './components/ProductForm'
-import ProductsPage from './pages/products/ProductsPage'
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 
-const App = () => {
+import Login from "./pages/auth/Login";
+import Register from "./pages/auth/Register";
+import ProductsPage from "./pages/products/ProductsPage";
+import Home from "./pages/Home";
+
+import ProtectedRoute from "./components/ProtectedRoute";
+import AdminRoute from "./components/AdminRoute";
+
+import Navbar from './components/Navbar'
+
+function App() {
   return (
-    <div>
-      <Navbar/>
-    {/* <Register/> */}
-    <Login/>
-    <AuthInitialiser/>
-    <ProductList/>
-    <ProductForm/>
-    <ProductsPage/>
-    </div>
-  )
+    <BrowserRouter>
+     <Navbar/>
+      <Routes>
+        
+        {/* PUBLIC ROUTES */}
+        <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
+
+        {/* USER ROUTE */}
+        <Route
+          path="/"
+          element={
+            <ProtectedRoute>
+              <Home />
+            </ProtectedRoute>
+          }
+        />
+
+        {/* ADMIN ROUTE */}
+        <Route
+          path="/products"
+          element={
+            <AdminRoute>
+              <ProductsPage />
+            </AdminRoute>
+          }
+        />
+
+      </Routes>
+    </BrowserRouter>
+  );
 }
 
-export default App
+export default App;
